@@ -1,53 +1,108 @@
 var stripe = require('stripe')('YOUR API KEY'),
     csv = require('csv'),
     fs = require('fs'),
-    parser = csv.parse({ delimiter: ',', from: 2 }),
-    output = [];
+    planparser = csv.parse({ delimiter: ',', from: 2 }),
+    prodparser = csv.parse({ delimiter: ',', from: 2 }),
+    prodoutput = [],
+    planoutput = [];
 
 var createPlan = function (plan) {
-    stripe.plans.create({
-        id: plan[0],
-        name: plan[1],
-        interval: plan[3],
-        amount: plan[4],
-        currency: plan[5]
-    }, function (err, plan) {
-        // asynchronously called
-        if (err) {
-            return console.log(err);
-        }
-        console.log('Plan ' + plan.id + ' was created');
+    let obj = {
+        currency: plan[7],
+        interval: plan[8],
+        product: plan[1],
+        nickname: plan[3],
+        amount: plan[6],
+        id: plan[0]
+    }
+    Object.keys(obj).forEach(key => {
+        if (!obj[key]) delete obj[key];
     });
+    const newplan = stripe.plans.create(obj);
 }
 
-var iteratePlans = function (plans) {
-    plans.forEach(function (plans) {
-        createPlan(plans);
-    }, this);
+var createProduct = function(prod){
+    let obj = {
+        id: prod[0],
+        name: prod[1],
+        type: prod[2],
+        statement_descriptor: prod[5],
+        unit_label: prod[6] ? prod[6] : null
+    };
+    Object.keys(obj).forEach(key => {
+        if (!obj[key]) delete obj[key];
+    })
+    const product = stripe.products.create(obj);
+}
+
+var iterateCalled = 0;
+
+var iteratePlans = function (plans, products) {
+    iterateCalled++;
+    if (iterateCalled == 2){
+        // console.log(products[0]);
+        // console.log(plans[0]);
+        products.forEach(function (prod) {
+            createProduct(prod);
+        }, this);
+
+        setTimeout(() => {
+            plans.forEach(function (plan) {
+                createPlan(plan);
+            }, this);  
+            console.log('done ');
+        } , 5000);
+    }
 }
 
 fs.readFile('./plans.csv', 'utf8', function (err, data) {
     if (err) {
         return console.log(err);
     }
-    parser.write(data);
-    parser.end();
+    planparser.write(data);
+    planparser.end();
 });
 
 
-parser.on('readable', function () {
-    while (record = parser.read()) {
-        output.push(record);
+planparser.on('readable', function () {
+    while (record = planparser.read()) {
+        planoutput.push(record);
     }
 });
 
 // Catch any error
-parser.on('error', function (err) {
-    console.log(err.message);
+planparser.on('error', function (err) {
+    console.log('plan', err.message);
 });
 // When we are done, test that the parsed output matched what expected
-parser.on('finish', function (data) {
-    console.log('finish')
-    iteratePlans(output);
+planparser.on('finish', function (data) {
+    console.log('finish plan')
+    iteratePlans(planoutput, prodoutput);
 });
 
+
+fs.readFile('./products.csv', 'utf8', function (err, data) {
+    if (err) {
+        return console.log(err);
+    }
+    prodparser.write(data);
+    prodparser.end();
+});
+
+
+
+prodparser.on('readable', function () {
+    while (rec = prodparser.read()) {
+        prodoutput.push(rec);
+    }
+});
+
+// Catch any error
+prodparser.on('error', function (err) {
+    console.log('prod',err.message);
+});
+// When we are done, test that the parsed output matched what expected
+prodparser.on('finish', function (data) {
+    console.log('finish prod')
+    iteratePlans(planoutput, prodoutput);
+});
