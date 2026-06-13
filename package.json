@@ -1,16 +1,23 @@
 {
-  "name": "stripeplansimporter",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "stripe-plans-importer-nodejs",
+  "version": "2.0.0",
+  "description": "Importá precios de Stripe en masa desde un CSV con Node.js + TypeScript.",
+  "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "tsx src/index.ts",
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "csv": "^1.1.1",
-    "fs": "0.0.1-security",
-    "stripe": "^5.1.1"
+    "csv-parse": "^5.6.0",
+    "stripe": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
   }
 }
