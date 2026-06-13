@@ -1,3 +1,7 @@
+<p align="center">
+  <img src=".github/banner.svg" alt="stripe-plans-importer" width="100%">
+</p>
+
 # stripe-plans-importer-nodejs
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
