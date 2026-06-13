@@ -1,10 +1,11 @@
 # stripe-plans-importer-nodejs
-Stripe Plans Imported Wrote in NodeJs
 
-## Steps
+Bulk-import Stripe plans from a CSV in Node.js — point it at a `plans.csv`, run one command, done.
 
-1. Run `npm Install`
-2. Update your "API KEY" in index.js file.
-3. Replace plans.cvs file with your file.
-4. Run `node index.js`
-5. Go for a :coffee: :smile:
+## Usage
+
+1. `npm install`
+2. Add your Stripe **API key** in `index.js`.
+3. Replace `plans.csv` with your own file.
+4. `node index.js`
+5. Go for a ☕ — your plans are created.
